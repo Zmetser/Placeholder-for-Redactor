@@ -7,6 +7,10 @@ if (typeof RedactorPlugins === 'undefined') var RedactorPlugins = {};
  */
 RedactorPlugins.placeholders = {
 
+    options: {
+        className: "placeholder"
+    },
+
     /**
      * Plugin constructor
      */
@@ -21,6 +25,67 @@ RedactorPlugins.placeholders = {
         this.addBtnSeparatorBefore('placeholders');
 
         this.replacePlaceholdersWithHTML();
+
+        this._removeHelperElement = this.document.createElement('span');
+
+        this.initKeyMap()
+    },
+
+    /**
+     * Attach handler on Redactor's keydownCallback
+     *
+     * @return {Object} self
+     */
+    initKeyMap: function () {
+        var original;
+
+        // Save existing callback
+        original = this.opts.keydownCallback;
+
+        // Register keydown callback
+        this.opts.keydownCallback = $.proxy(function ( obj, event ) {
+            // Run existing callback first
+            if ( typeof original === 'function' )
+                original( obj, event );
+
+            // Backspace polyfill
+            if ( event.keyCode == 8 && !this.getSelectedHtml().length )
+                this._backspacePolyfill( event );
+        }, this);
+
+        return this;
+    },
+
+    /**
+     * Handle backspace when the user is about to delete a placeholder.
+     *
+     * @param {Object} event event
+     */
+    _backspacePolyfill: function ( event ) {
+        var $helper_element, $prev, nodeType;
+
+        this.insertNodeAtCaret(this._removeHelperElement);
+
+        $helper_element = $(this._removeHelperElement);
+
+        // Get previous_sibling to delete
+        $prev = $(this._removeHelperElement.previousSibling);
+        nodeType = $prev.get(0) ? $prev.get(0).nodeType : null;
+
+        // Previous sibling exists and its an element
+        if ( $prev.get(0) ) {
+            if (
+                // element is a placeholder
+                ( nodeType == 1 && $prev.hasClass(this.options.className) ) ||
+                // element's parent is a placeholder
+                ( nodeType == 3 && ( $prev = $prev.parent() ).hasClass(this.options.className) )
+                ) {
+                event.preventDefault();
+                $prev.remove();
+            }
+        }
+
+        $helper_element.detach();
     },
 
     /**
@@ -62,7 +127,7 @@ RedactorPlugins.placeholders = {
      * @return {String}       placeholder span as text
      */
     getPlaceholderHTML: function ( name, value ) {
-        return ['<span class="placeholder" contenteditable="false" name="' + name + '">',
+        return ['<span class="' + this.options.className + '" contenteditable="false" name="' + name + '">',
          value,
          '</span>'].join('');
     },
@@ -121,7 +186,7 @@ RedactorPlugins.placeholders = {
         var $html = jQuery('<div>' + this.getCode() + '</div>');
 
         // Replace placeholder spans to placeholder text encapsulated with {{}}
-        jQuery('.placeholder', $html).before(function () {
+        jQuery('.' + this.options.className, $html).before(function () {
             return "{{" + jQuery(this).attr('name') + "}}";
         }).remove();
 
