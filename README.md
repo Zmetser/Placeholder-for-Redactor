@@ -2,6 +2,8 @@
 
 Adds a drop-down list of pre-defined placeholders that you can insert into the editor.
 
+Works with 8.2.x
+
 ## Example
 
 http://thezee.hu/redactor_placeholder/
@@ -31,4 +33,15 @@ $('#redactor').redactor({
 
 ## Drawbacks
 
-Sadly redactor has no beforeSave callback, therefore you have to transform the placeholder spans back to text manually. If you do it on the client side you can use the plugins `getTransformedText` method.
+Sadly redactor has no beforeSave callback, therefore you have to transform the placeholder spans back to text manually. If you do it on the client side you can use the plugin's `getTransformedHtml` method.
+
+
+## Placeholder plugin
+
+Copyright (c) 2013, Oliver Kovacs (Zmetser)
+Licensed under the MIT License
+
+## Redactor
+
+Copyright (c) 2009-2013, Imperavi Inc.
+License: http://imperavi.com/redactor/license/
