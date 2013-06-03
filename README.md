@@ -6,7 +6,8 @@ Works with 8.2.x
 
 ## Example
 
-http://thezee.hu/redactor_placeholder/
+* Stable version: http://thezee.hu/redactor_placeholder/
+* Beta version for Redactor v9.0: http://thezee.hu/redactor_placeholder/index_9.html
 
 ## Usage
 
