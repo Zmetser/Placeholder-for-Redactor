@@ -16,7 +16,7 @@ You should define the placeholders before plugin init by adding them to the text
 ```
 var placeholders = [
     {
-        name: "placeholder_name"
+        name: "placeholder_name",
         value: "Placeholder display value"
     }
 ];
